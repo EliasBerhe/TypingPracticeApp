@@ -12,6 +12,7 @@ const[cursorOn, setCursor]  = useState(false);
 
 
 const[words, setWords] = useState('');
+const[timeLeft, setTimeLeft] = useState(30)
 const[state, setState] = useState('start');
 const {typed, cursor, clearTyped, resetTotalTyped, totalTyped} = useTyping(userType);
 const handleInputChange = (event) =>{
@@ -22,6 +23,7 @@ const handleInputChange = (event) =>{
 useEffect(()=>{
   setWords(faker.random.words(100));
 },[])
+
 
 
 const handleClick = () => {
@@ -42,7 +44,7 @@ const handleClick2 = () => {
 const GeneratedWords = ({words}) => {
   return (
     
-  <div className=' text-black'>
+  <div className=' text-black font-bold text-xl '>
    
     {words}
  
@@ -61,6 +63,7 @@ const GeneratedWords = ({words}) => {
     <div className='grid grid-cols-2 gap-[400px] justify-items-start justify-content-center'>
       <div className="text-center text-white">
       Total-Typed: {totalTyped}
+
       </div>
       <div className=" text-center text-white">
       <p>{cursorOn? "Goo":"Press Start" }</p>
@@ -166,7 +169,7 @@ const Character = (
 )=>{
   return (
 
-  <span className= {`text-${array[index]===char?"primary":"secondary"}`}>{char}</span>
+  <span className= {`text-${array[index]===char?"primary":"secondary"} text-xl`}>{char}</span>
  
  
   )
