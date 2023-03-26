@@ -2,15 +2,18 @@ import { faker } from '@faker-js/faker'
 import React from 'react'
 import { useState, useEffect } from 'react'
 
-import RestartButton from './RestartButton'
+import userTypings from './userTyping'
 import { motion } from 'framer-motion';
-
+import useTyping from './userTyping';
 const Type = () => {
 
-const[userType, setUserType] = useState('');
+const[userType, setUserType] = useState(false);
+const[cursorOn, setCursor]  = useState(false);
+
 
 const[words, setWords] = useState('');
-
+const[state, setState] = useState('start');
+const {typed, cursor, clearTyped, resetTotalTyped, totalTyped} = useTyping(userType);
 const handleInputChange = (event) =>{
   setUserType(event.target.value);
 }
@@ -21,51 +24,105 @@ useEffect(()=>{
 },[])
 
 
+const handleClick = () => {
+  
+setUserType(true)
+setCursor(true)
+}
 
-
-
+const handleClick2 = () => {
+  
+  setUserType(false)
+  setWords(faker.random.words(100));
+  clearTyped();
+  setCursor(false)
+  resetTotalTyped();
+  }
+  
+const GeneratedWords = ({words}) => {
+  return (
+    
+  <div className=' text-black'>
+   
+    {words}
+ 
+    
+   
+  </div>
+  )
+}
   
   return (
     <>
+    
 
-
-        <form>
-      <label className='text-indigo-400'>
-        Name:
-        <input type="text"  value={userType} onChange={handleInputChange}  style={{  opacity: 0  }} />
-      </label>
-      <button type="submit">Submit</button>
-    </form>
-    <div className='min-h-screen grid place-items-center font-mono  px-60 md:px-20 sm:px-4'>
- 
+    <div className='min-h-[80vh] grid place-items-center font-mono '>
+    
+    <div className='grid grid-cols-2 gap-[400px] justify-items-start justify-content-center'>
+      <div className="text-center text-white">
+      Total-Typed: {totalTyped}
+      </div>
+      <div className=" text-center text-white">
+      <p>{cursorOn? "Goo":"Press Start" }</p>
+      </div>
+     
+    </div>
       <div className='relative max-w-xl mt-3  leading-relaxed break-all'>
-
+      
         <GeneratedWords words ={words} />
         
-        <UserTypings className='absolute inset-0' userInput = {userType} />
+        <UserTypings paragraph={words} userInput = {typed}  cursor = {cursorOn}/>
+      
+
+
       
       </div>
-   
-     
+    
+      
+      <div className="grid grid-cols-2 gap-10 justify-items-center justify-content-center">
+  <div className="text-center text-white">
+  <button
+            onClick = {handleClick}
+            className= {`block rounded px-8 py-2 hover:bg-red-700/50  `}
+            
+
+
+    >
+      
+    Start
+    
+
+    </button>
+
+  </div>
+  <div className=" text-center text-white">
+
+  <button
+            onClick = {handleClick2}
+            className= {`block rounded px-8 py-2 hover:bg-red-700/50  `}
+
+
+    >
+      
+    Re-Start
+    
+
+    </button>
+  </div>
+
+</div>
+  
       
      
     
   </div>
+  
+   
   </>
 
   )
 }
-const GeneratedWords = ({words}) => {
-  return (
-    
-  <div className=' text-secondary'>
-   
-    {words}
- 
-   
-  </div>
-  )
-}
+
 
 const CountdownTimer = ({ timeLeft}) =>{
   return <h2 className='text-zinc-400 font-large'>Time: {timeLeft}</h2>
@@ -74,10 +131,12 @@ const CountdownTimer = ({ timeLeft}) =>{
 const UserTypings = (
   {
     userInput,
-    className,
+    paragraph,
+    cursor,
   }
 ) =>{
   const typedCharacters = userInput.split("");
+  const par = paragraph.split("");
 
   return (
     <div className='absolute inset-0  '>
@@ -88,11 +147,13 @@ const UserTypings = (
         <Character
           key={`${char}_${index}`}
           char ={char}
+          array = {par}
+          index = {index}
         />
       ))}
    
    
-      <Cursor />
+      <Cursor  valid = {cursor}/>
 
     </div>
   );
@@ -101,17 +162,20 @@ const UserTypings = (
 };
 
 const Character = (
-  {char}
+  {char, array, index}
 )=>{
   return (
 
-  <span className='text-primary '>{char}</span>
+  <span className= {`text-${array[index]===char?"primary":"secondary"}`}>{char}</span>
  
  
   )
 }
 
-const Cursor = () =>{
+const Cursor = (valid) =>{
+  
+ 
+ 
   return (
 
     <motion.div 
@@ -120,14 +184,19 @@ const Cursor = () =>{
     initial = {{ opacity: 1}}
     animate = {{ opacity: 0}}
     exit = {{ opacity:1 }}
+ 
     transition = {{ repeat: Infinity, duration: 0.8, erase: "eraseInOut"}}
 
 
 
     />
+   
+
+
 
   );
 };
+
 
 
 export default Type
