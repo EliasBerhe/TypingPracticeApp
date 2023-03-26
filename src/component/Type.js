@@ -1,26 +1,49 @@
 import { faker } from '@faker-js/faker'
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import RestartButton from './RestartButton'
 import { motion } from 'framer-motion';
-import Engine from './Engine';
+
 const Type = () => {
 
-const {state, words} = Engine();
+const[userType, setUserType] = useState('');
+
+const[words, setWords] = useState('');
+
+const handleInputChange = (event) =>{
+  setUserType(event.target.value);
+}
+
+
+useEffect(()=>{
+  setWords(faker.random.words(100));
+},[])
+
+
+
 
 
   
   return (
     <>
-     
+
+
+        <form>
+      <label className='text-indigo-400'>
+        Name:
+        <input type="text"  value={userType} onChange={handleInputChange}  style={{  opacity: 0  }} />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
     <div className='min-h-screen grid place-items-center font-mono  px-60 md:px-20 sm:px-4'>
  
       <div className='relative max-w-xl mt-3  leading-relaxed break-all'>
 
-        <GeneratedWords words = {words} />
+        <GeneratedWords words ={words} />
         
-        <UserTypings className='absolute inset-0' userInput = {"words"} />
+        <UserTypings className='absolute inset-0' userInput = {userType} />
+      
       </div>
    
      
@@ -57,17 +80,19 @@ const UserTypings = (
   const typedCharacters = userInput.split("");
 
   return (
-    <div className='absolute inset-0'>
+    <div className='absolute inset-0  '>
 
-   
+
 {typedCharacters.map((char, index) => (
+  
         <Character
           key={`${char}_${index}`}
           char ={char}
         />
       ))}
-   <Cursor />
- 
+   
+   
+      <Cursor />
 
     </div>
   );
@@ -78,7 +103,12 @@ const UserTypings = (
 const Character = (
   {char}
 )=>{
-  return <span className='text-primary'>{char}</span>
+  return (
+
+  <span className='text-primary '>{char}</span>
+ 
+ 
+  )
 }
 
 const Cursor = () =>{
@@ -86,7 +116,7 @@ const Cursor = () =>{
 
     <motion.div 
     aria-hidden = {true}
-    className = "inline-block bg-primary w-0.5 h-7"
+    className = "inline-block bg-primary w-0.5 h-4"
     initial = {{ opacity: 1}}
     animate = {{ opacity: 0}}
     exit = {{ opacity:1 }}
