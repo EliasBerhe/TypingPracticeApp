@@ -12,22 +12,52 @@ const[cursorOn, setCursor]  = useState(false);
 
 
 const[words, setWords] = useState('');
-const[timeLeft, setTimeLeft] = useState(30)
-const[state, setState] = useState('start');
+const[typing, setIsTyping] = useState(false)
+const[doneTyping, setDone] = useState(false)
 const {typed, cursor, clearTyped, resetTotalTyped, totalTyped} = useTyping(userType);
 const handleInputChange = (event) =>{
   setUserType(event.target.value);
 }
+const [seconds, setSeconds] = useState(0);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if(typing ){
+      setSeconds(seconds+1);
+    }
+    
+  },1000);
+  return () => clearTimeout(timer);
+ 
+},);
+
 
 
 useEffect(()=>{
   setWords(faker.random.words(100));
 },[])
 
+useEffect(()=>{
+
+  if(totalTyped===words.length){
+    setDone(true)
+    setUserType(false)
+    clearTyped();
+
+  }
+  else{
+    setDone(false)
+    setUserType(true)
+  }
+
+})
+
+
+
 
 
 const handleClick = () => {
-  
+setIsTyping(true)
 setUserType(true)
 setCursor(true)
 }
@@ -39,12 +69,14 @@ const handleClick2 = () => {
   clearTyped();
   setCursor(false)
   resetTotalTyped();
+  setSeconds(0);
+  setIsTyping(false)
   }
   
 const GeneratedWords = ({words}) => {
   return (
     
-  <div className=' text-black font-bold text-xl '>
+  <div className=' text-slate-700 font-bold text-2xl'>
    
     {words}
  
@@ -53,40 +85,49 @@ const GeneratedWords = ({words}) => {
   </div>
   )
 }
+const Result = () => (
+
+  <div className='text-white border-2 rounded-[20px] min-w-[200px] min-h-[200px] flex items-center px-16'>
+    <h1 className='text-2xl'> WPM: <span>{(totalTyped/seconds)*60}</span></h1>
+  </div>
+)
   
   return (
     <>
     
 
-    <div className='min-h-[80vh] grid place-items-center font-mono '>
+    <div className='min-h-[80vh] grid place-items-center font-mono rounded-[20px]  '>
     
     <div className='grid grid-cols-2 gap-[400px] justify-items-start justify-content-center'>
       <div className="text-center text-white">
-      Total-Typed: {totalTyped}
+      Total-Typed: {totalTyped} <br />
+      Time-Left: {seconds}
 
       </div>
+      
       <div className=" text-center text-white">
       <p>{cursorOn? "Goo":"Press Start" }</p>
       </div>
      
     </div>
       <div className='relative max-w-xl mt-3  leading-relaxed break-all'>
-      
-        <GeneratedWords words ={words} />
+
+
+        {!doneTyping?<GeneratedWords words ={words} />:<Result />} 
         
         <UserTypings paragraph={words} userInput = {typed}  cursor = {cursorOn}/>
       
 
-
+       
       
       </div>
-    
+     
       
       <div className="grid grid-cols-2 gap-10 justify-items-center justify-content-center">
   <div className="text-center text-white">
   <button
             onClick = {handleClick}
-            className= {`block rounded px-8 py-2 hover:bg-red-700/50  `}
+            className= {`block rounded border-[1px] px-8 py-2 hover:bg-red-700/50  `}
             
 
 
@@ -98,11 +139,11 @@ const GeneratedWords = ({words}) => {
     </button>
 
   </div>
-  <div className=" text-center text-white">
+  <div className="text-center text-white">
 
   <button
             onClick = {handleClick2}
-            className= {`block rounded px-8 py-2 hover:bg-red-700/50  `}
+            className= {`block rounded border-[1px] px-8 py-2 hover:bg-red-700/50  `}
 
 
     >
@@ -127,9 +168,6 @@ const GeneratedWords = ({words}) => {
 }
 
 
-const CountdownTimer = ({ timeLeft}) =>{
-  return <h2 className='text-zinc-400 font-large'>Time: {timeLeft}</h2>
-}
 
 const UserTypings = (
   {
@@ -167,9 +205,12 @@ const UserTypings = (
 const Character = (
   {char, array, index}
 )=>{
+  const x=array[index]===char?"white":"secondary"
+ 
   return (
 
-  <span className= {`text-${array[index]===char?"primary":"secondary"} text-xl`}>{char}</span>
+
+  <span className= {`text-${x} text-2xl`}>{char}</span>
  
  
   )
@@ -183,7 +224,7 @@ const Cursor = (valid) =>{
 
     <motion.div 
     aria-hidden = {true}
-    className = "inline-block bg-primary w-0.5 h-4"
+    className = "inline-block bg-primary w-0.5 h-5"
     initial = {{ opacity: 1}}
     animate = {{ opacity: 0}}
     exit = {{ opacity:1 }}
@@ -199,6 +240,8 @@ const Cursor = (valid) =>{
 
   );
 };
+
+
 
 
 

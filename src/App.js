@@ -6,6 +6,7 @@ import StarsCanvas from './component/Stars';
 
 
 
+
 function App() {
 
   return (
@@ -13,7 +14,7 @@ function App() {
     
          
       <StarsCanvas />
-      <Type />
+    <Type />
     
     </div>
   );
