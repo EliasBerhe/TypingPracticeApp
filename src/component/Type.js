@@ -15,21 +15,23 @@ const[words, setWords] = useState('');
 const[typing, setIsTyping] = useState(false)
 const[doneTyping, setDone] = useState(false)
 const {typed, cursor, clearTyped, resetTotalTyped, totalTyped} = useTyping(userType);
-const handleInputChange = (event) =>{
-  setUserType(event.target.value);
-}
+
 const [seconds, setSeconds] = useState(0);
 
 useEffect(() => {
   const timer = setTimeout(() => {
-    if(typing ){
+    if(typing&&userType){
       setSeconds(seconds+1);
     }
+    
+    
+    
+   
     
   },1000);
   return () => clearTimeout(timer);
  
-},);
+});
 
 
 
@@ -41,13 +43,13 @@ useEffect(()=>{
 
   if(totalTyped===words.length){
     setDone(true)
-    setUserType(false)
+    
     clearTyped();
 
   }
   else{
     setDone(false)
-    setUserType(true)
+    
   }
 
 })
@@ -101,7 +103,7 @@ const Result = () => (
     <div className='grid grid-cols-2 gap-[400px] justify-items-start justify-content-center'>
       <div className="text-center text-white">
       Total-Typed: {totalTyped} <br />
-      Time-Left: {seconds}
+      Time: {seconds}
 
       </div>
       
